@@ -1,0 +1,76 @@
+<!-- templates/prediction.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+</head>
+<body>
+    <h1>House Price Prediction</h1>
+    <form id="predictionForm" onsubmit="predict(event)">
+        <label for="MedInc">MedInc:</label>
+        <input type="text" name="MedInc" required><br>
+
+        <label for="HouseAge">HouseAge:</label>
+        <input type="text" name="HouseAge" required><br>
+
+        <label for="AveRooms">AveRooms:</label>
+        <input type="text" name="AveRooms" required><br>
+
+        <label for="AveBedrms">AveBedrms:</label>
+        <input type="text" name="AveBedrms" required><br>
+
+        <label for="Population">Population:</label>
+        <input type="text" name="Population" required><br>
+
+        <label for="AveOccup">AveOccup:</label>
+        <input type="text" name="AveOccup" required><br>
+
+        <label for="Latitude">Latitude:</label>
+        <input type="text" name="Latitude" required><br>
+
+        <label for="Longitude">Longitude:</label>
+        <input type="text" name="Longitude" required><br>
+
+        <!-- Add input fields for other features -->
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="predictionResult"></div>
+
+    <script>
+        async function predict(event) {
+            event.preventDefault();
+            const form = document.getElementById("predictionForm");
+            const formData = new FormData(form);
+
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            console.log("Data sent in the request:", data);
+
+            try {
+                const response = await fetch('/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                document.getElementById("predictionResult").innerText = `Prediction: ${result.prediction}`;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
