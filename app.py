@@ -1,9 +1,18 @@
 import pickle
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI,HTTPException,Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import numpy as np
 from pydantic import BaseModel
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+
+
+
+templates = Jinja2Templates(directory="templates")
+
+
 
 class InputData(BaseModel):
     MedInc: float
@@ -54,3 +63,6 @@ async def predict(data: InputData):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@app.get("/", response_class=HTMLResponse)
+async def read_item(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
